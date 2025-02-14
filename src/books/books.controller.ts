@@ -7,14 +7,23 @@ import {
   Param,
   Delete,
   ValidationPipe,
+  UseGuards,
+  UseInterceptors,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { BooksExeption } from './books.exception';
+import { BooksGuard } from './guard/books.guard';
+import { BooksInterceptor } from './interceptor/books.interceptor';
+import { Request, Response } from 'express';
 //import { BooksPipe } from './pipes/books.pipe';
 
 @Controller('books')
+@UseGuards(BooksGuard)
+@UseInterceptors(BooksInterceptor)
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
@@ -25,17 +34,24 @@ export class BooksController {
   // }
 
   @Post()
-  create(@Body(new ValidationPipe()) createBookDto: CreateBookDto) {
+  create(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body(new ValidationPipe()) createBookDto: CreateBookDto,
+  ) {
     if (!createBookDto) {
       throw new BooksExeption();
     }
-    return this.booksService.create(createBookDto);
+    return res.json(req.body);
+    // return this.booksService.create(createBookDto);
   }
 
   @Get()
   findAll() {
     // to test custom exception claas
     //throw new BooksExeption();
+    //console.log('reqqq', req.body);
+
     return this.booksService.findAll();
   }
 
