@@ -34,7 +34,7 @@ export class BooksController {
   // }
 
   @Post()
-  create(
+  async create(
     @Req() req: Request,
     @Res() res: Response,
     @Body(new ValidationPipe()) createBookDto: CreateBookDto,
@@ -42,8 +42,10 @@ export class BooksController {
     if (!createBookDto) {
       throw new BooksExeption();
     }
-    return res.json(req.body);
-    // return this.booksService.create(createBookDto);
+    // return res.json(req.body);
+    const regRes = await this.booksService.create(createBookDto);
+    //console.log('trrrrr', regRes);
+    return res.json(regRes);
   }
 
   @Get()
